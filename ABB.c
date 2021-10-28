@@ -26,7 +26,11 @@ int criaABB(ppABB pp, int tamInfo){
 }
 	
 int destroiABB(ppABB pp){
-	free(pp);
+	(*pp)->esquerda = NULL;
+	(*pp)->direita = NULL;
+	(*pp)->pai = NULL;
+	(*pp)->dados = NULL;
+	free(*pp);
 	return SUCESSO;
 }
 
@@ -101,18 +105,98 @@ int removeABB(pABB p, void *item, int (* cmp)(void *p1, void *p2)){
 		//Se encontrou o item igual...
 		if (diferenca==0){
 			//inicia a remoção
-			printf("achou quem remover\n");
+			//printf("achou quem remover\n");
+			//printf("ID esquerdo do pai: %i\n", *(&(p->pai->esquerda)->id));
+			//printf("ID direito do pai: %i\n", *(&(p->pai->direita)->id));
+			//printf("meu ID: %i\n", p->id);
+			//printf("ID filho esquerdo: %i\n", *(&(p->esquerda)->id));
+			//printf("ID filho direito: %i\n", *(&(p->direita)->id));
 			//se tem 0 filhos
+			if((p->esquerda->id==0)&&(p->direita->id==0)){
+				//printf("não tem filhos\n");
 				//altera pai trocando ele por null
-				//if (p->pai->id < p->id)
+				if ((*(&(p->pai->esquerda)->id)) == p->id){
+					//printf("exclui esquerda do pai\n");
+					p->pai->esquerda = NULL;
+				}else{
+					//printf("exclui direita do pai\n");
+					p->pai->direita = NULL;
+				}
 			//senao se tem um filho
+			}else if ((p->esquerda->id==0)||(p->direita->id==0)){	
+				//printf("tem 1 filho\n");
 				//filho ocupa lugar dele no pai
+				if ((*(&(p->pai->esquerda)->id)) == p->id){
+					if (p->esquerda->id!=0){
+						//printf("filho da esquerda ocupa esquerda do pai\n");
+						p->pai->esquerda = p->esquerda;
+					}else{
+						//printf("filho da direita ocupa esquerda do pai\n");
+						p->pai->esquerda = p->direita;
+					}	
+				}else{
+					if (p->esquerda->id!=0){
+						//printf("filho da esquerda ocupa direita do pai\n");
+						p->pai->direita = p->esquerda;
+					}else{
+						//printf("filho da direita ocupa direita do pai\n");
+						p->pai->direita = p->direita;
+					}
+				}
+				
 			//senao é pq tem 2 filhos
+			}else{
+				//printf("tem 2 filhos\n");
 				//pensar com calma depois kkkkk
+				//ponteiro recebe filho da direita
+				pABB substituto = p->direita;
+				//contadora recebe 0
+				int contadora = p->id +1;
+				//usa while pra achar id do deletado +contadora
+				while (contadora!=0){
+					//printf("contadora: %i\n", contadora);
+					//se buscaABB do id+contadora retorna positivo
+					if ((buscaABB(substituto, &contadora, (* cmp)))){
+						//printf("achou a posição: %i\n", contadora);
+						//existe elemento, então enquanto id do elemento a ser excluido for diferente do elemento à esquerda do seu filho da direita
+						while ((*(&(substituto)->id)) != contadora){
+							//printf("while\n");
+							//ptr recebe próximo elemento à esquerda
+							substituto = substituto->esquerda;	
+						}
+						//encontrado o elemento substituto
+						//printf("Substituto: %i\n", *(&(substituto)->id));
+						//troca nos filhos do elemento a ser deletado o pai para o substituto
+						p->esquerda->pai = substituto;
+						p->direita->pai = substituto;
+						//troca no pai do elemento a ser deletado o filho para ser o substituto
+						if ((*(&(p->pai->esquerda)->id)) == p->id){
+							//printf("pai recebe sub à esquerda\n");
+							p->pai->esquerda = substituto;
+						}else{
+							//printf("pai recebe sub à direita\n");
+							p->pai->direita = substituto;
+						}
+						//troca o filho esquerdo do pai do substituto para o filho direito dele
+						substituto->pai->esquerda = substituto->direita;
+						//troca pai e filhos do substituto para pai e filhos do a ser excluido
+						substituto->pai = p->pai;
+						substituto->esquerda = p->esquerda;
+						substituto->direita = p->direita;
+						//contadora 0 pra sair do while
+						contadora=0;
+					}else{
+						//procura proximo valor
+						contadora++;	
+					}	
+				}		
+			}	
 			//exclui da memoria
+			destroiABB(&p);
+			return SUCESSO;
 		//senão é esse, se a diferença for negativa tenta remover na esquerda	
 		}else if (diferenca < 0){
-			printf("busca remover na esquerda\n");
+			//printf("busca remover na esquerda\n");
 			if (!removeABB(p->esquerda, item, (* cmp))){
 				return FRACASSO;		
 			}else{
@@ -120,7 +204,7 @@ int removeABB(pABB p, void *item, int (* cmp)(void *p1, void *p2)){
 			}		
 		//Caso contrário, o nó da direito será visitado;
 		}else if (diferenca > 0){
-			printf("busca remover na direita\n");
+			//printf("busca remover na direita\n");
 			if (!removeABB(p->direita, item, (* cmp))){
 				return FRACASSO;		
 			}else{
