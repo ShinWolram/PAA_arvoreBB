@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
        if((buscaABB(ptr, &novo, comparaDados))){
          printf("Buscado com sucesso [%d]\n", novo);
        } else{
-        printf("Erro na remoção [%d]\n", novo);
+        printf("Erro na busca [%d]\n", novo);
       }
     }
 
