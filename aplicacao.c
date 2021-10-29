@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
       }
     }
 
+  
     if(!fscanf(stdin, "%i", &elementos))
 		printf("Erro no fscanf\n");
     printf("\nNúmero de remoções: %i\n", elementos);

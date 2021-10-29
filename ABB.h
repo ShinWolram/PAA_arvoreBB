@@ -14,6 +14,7 @@ int testaVaziaABB(pABB p);
 int percursoEmOrdem(pABB pa, void (* processa)(void *p));
 int percursoPreOrdem(pABB pa, void (* processa)(void *p));
 int percursoPosOrdem(pABB pa, void (* processa)(void *p));
+pABB buscaMenorNo(pABB p);
 
 /*
 int criaABB(ppABB pp);
