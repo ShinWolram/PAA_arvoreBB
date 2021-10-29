@@ -135,7 +135,6 @@ int removeABB(pABB p, void *item, int (*cmp)(void *p1, void *p2))
 	}
 	else
 	{
-
 		int diferenca = (*cmp)(item, &p->id);
 
 		if (diferenca == 0)
